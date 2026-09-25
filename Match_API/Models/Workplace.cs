@@ -7,6 +7,7 @@ public class Workplace
     public string? ApplicationUrl { get; set; }
     public string? WebsiteUrl { get; set; }
     public int PreviousLIAStudents { get; set; } = 0;
+    public List<Technology> Technologies { get; set; } = new();
 
     public Workplace() { }
 
