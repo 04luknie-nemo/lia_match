@@ -1,6 +1,11 @@
 import { Workplace } from "@/types/workplace";
 import { useQuery } from "@tanstack/react-query";
-import { Stack, useLocalSearchParams } from "expo-router";
+import {
+  Link,
+  Stack,
+  useLocalSearchParams,
+  type ExternalPathString,
+} from "expo-router";
 import { Text, View } from "react-native";
 
 async function getWorkplace(shownId: string): Promise<Workplace> {
@@ -30,6 +35,23 @@ export default function WorkplaceDetail() {
       />
       <Text>Företag: {data?.bussinessName}</Text>
       <Text>Ligger i {data?.city}</Text>
+      <Text>
+        {data?.applicationUrl ? (
+          <Link href={data?.applicationUrl as ExternalPathString}>
+            Ansök här!
+          </Link>
+        ) : (
+          "Ingen länk tyvärr"
+        )}
+      </Text>
+      <Text>
+        {data?.websiteUrl ? (
+          <Link href={data?.websiteUrl as ExternalPathString}>Website här</Link>
+        ) : (
+          "Ingen hemsida tyvärr"
+        )}
+      </Text>
+      {/* Här får man ha delen med antal tidigare lia studenter */}
     </View>
   );
 }
