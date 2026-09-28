@@ -1,3 +1,4 @@
+import { Workplace } from "@/types/workplace";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -8,13 +9,6 @@ import {
   Text,
   View,
 } from "react-native";
-
-interface Workplace {
-  id: number;
-  shownId: string;
-  bussinessName: string;
-  city: string;
-}
 
 export default function Index() {
   const [isLoading, setIsLoading] = useState(true);
@@ -53,7 +47,7 @@ export default function Index() {
                 onPress={() =>
                   router.push({
                     pathname: "/workplaces/[shownId]",
-                    params: { id: item.shownId },
+                    params: { shownId: item.shownId },
                   })
                 }
               >

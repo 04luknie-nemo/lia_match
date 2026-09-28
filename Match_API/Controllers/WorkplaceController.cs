@@ -12,11 +12,16 @@ public class WorkplaceController : ControllerBase
     public async Task<IActionResult> GetAll() =>
         Ok(await _db.Workplaces.ToListAsync());
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetOne(int id)
+    // [HttpGet("{id}")]
+    // public async Task<IActionResult> GetOne(int id)
+    // {
+    //     Workplace? workPlace = await _db.Workplaces.FindAsync(id);
+    //     return workPlace is null ? NotFound("Workplace not found") : Ok(workPlace);
+    // }
+    [HttpGet("{shownId}")]
+    public async Task<IActionResult> GetOne(string shownId)
     {
-        Workplace? workPlace = await _db.Workplaces.FindAsync(id);
+        Workplace? workPlace = await _db.Workplaces.FirstOrDefaultAsync(w => w.ShownId == shownId);
         return workPlace is null ? NotFound("Workplace not found") : Ok(workPlace);
     }
 }
-// eheehehedsdsdsdsd

@@ -10,7 +10,7 @@ export default function WorkplaceLayout() {
         }}
       />
       <Stack.Screen
-        name="[id]"
+        name="[shownId]"
         options={{
           title: "Details",
         }}
