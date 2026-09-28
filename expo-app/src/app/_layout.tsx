@@ -16,7 +16,7 @@ export default function RootLayout() {
               title: "",
               headerShown: true,
               headerRight: () => (
-                <Pressable onPress={() => router.push("/profile")}>
+                <Pressable onPress={() => router.push("/profile-page")}>
                   <Feather name="user" size={24} />
                 </Pressable>
               ),
