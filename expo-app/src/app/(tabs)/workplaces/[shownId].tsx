@@ -3,7 +3,7 @@ import { View } from "react-native";
 
 export default function WorkplaceDetail() {
   const { id } = useLocalSearchParams();
-
+  console.log(id);
   return (
     <View>
       <Stack.Screen options={{ title: `Workplace ${id}` }} />

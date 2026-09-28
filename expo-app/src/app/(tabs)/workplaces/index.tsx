@@ -11,6 +11,7 @@ import {
 
 interface Workplace {
   id: number;
+  shownId: string;
   bussinessName: string;
   city: string;
 }
@@ -51,8 +52,8 @@ export default function Index() {
                 style={styles.workplaceCard}
                 onPress={() =>
                   router.push({
-                    pathname: "/workplaces/[id]",
-                    params: { id: item.id },
+                    pathname: "/workplaces/[shownId]",
+                    params: { id: item.shownId },
                   })
                 }
               >
