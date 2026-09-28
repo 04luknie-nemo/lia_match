@@ -28,8 +28,8 @@ export default function WorkplaceDetail() {
           headerBackTitle: "Back",
         }}
       />
-      <Text>{data?.bussinessName}</Text>
-      <Text>{data?.city}</Text>
+      <Text>Företag: {data?.bussinessName}</Text>
+      <Text>Ligger i {data?.city}</Text>
     </View>
   );
 }
