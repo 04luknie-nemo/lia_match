@@ -10,41 +10,36 @@ public class WorkplaceController : ControllerBase
 
     [HttpGet]
     public async Task<IActionResult> GetAll() =>
-        Ok(await _db.Workplaces.Select(w => new
-        {
-            w.Id,
-            w.ShownId,
-            w.BussinessName,
-            w.City,
-            w.ApplicationUrl,
-            w.WebsiteUrl,
-            w.PreviousLIAStudents,
-            technologies = w.Technologies.Select(t => new { t.Id, t.Name })
-        }).ToListAsync());
+    Ok(await _db.Workplaces.Select(w => new
+    {
+        w.Id,
+        w.ShownId,
+        w.BussinessName,
+        w.City,
+        w.ApplicationUrl,
+        w.WebsiteUrl,
+        w.PreviousLIAStudents,
+        technologies = w.Technologies.Select(t => new { t.Id, t.Name })
+    }).ToListAsync());
 
-    // [HttpGet("{id}")]
-    // public async Task<IActionResult> GetOne(int id)
-    // {
-    //     Workplace? workPlace = await _db.Workplaces.FindAsync(id);
-    //     return workPlace is null ? NotFound("Workplace not found") : Ok(workPlace);
-    // }
     [HttpGet("{shownId}")]
-    public async Task<IActionResult> GetOne(string shownId)
+    public async Task<IActionResult> GetOne(string shownId, [FromQuery] int? profileId)
     {
-        Workplace? workPlace = await _db.Workplaces.FirstOrDefaultAsync(w => w.ShownId == shownId);
+        var workPlace = await _db.Workplaces
+            .Where(w => w.ShownId == shownId)
+            .Select(w => new
+            {
+                w.Id,
+                w.ShownId,
+                w.BussinessName,
+                w.City,
+                w.ApplicationUrl,
+                w.WebsiteUrl,
+                w.PreviousLIAStudents,
+                isAppointed = w.ProfileWorkplaces
+                    .Any(pw => pw.StudentProfileId == profileId && pw.IsAppointed)
+            }).FirstOrDefaultAsync();
+
         return workPlace is null ? NotFound("Workplace not found") : Ok(workPlace);
-    }
-    [HttpPatch("{shownId}/{isAppointed}")]
-    public async Task<IActionResult> UpdateOne(string shownId, bool isAppointed)
-    {
-        Workplace? workplace = await _db.Workplaces.FirstOrDefaultAsync(w => w.ShownId == shownId);
-        if (workplace is null)
-        {
-            return NotFound("Workplace not found");
-        }
-        workplace.IsAppointed = isAppointed;
-        _db.Workplaces.Update(workplace);
-        await _db.SaveChangesAsync();
-        return Ok(workplace);
     }
 }

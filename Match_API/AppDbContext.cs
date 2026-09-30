@@ -8,4 +8,5 @@ public class AppDbContext : DbContext
     public DbSet<Technology> Technologies => Set<Technology>();
     public DbSet<StudentProfile> StudentProfiles => Set<StudentProfile>();
     public DbSet<ProfileTechnology> ProfileTechnologies => Set<ProfileTechnology>();
+    public DbSet<ProfileWorkplace> ProfileWorkplaces => Set<ProfileWorkplace>();
 }
