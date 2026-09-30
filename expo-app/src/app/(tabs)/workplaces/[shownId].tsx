@@ -1,22 +1,44 @@
 import { Workplace } from "@/types/workplace";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Link,
   Stack,
   useLocalSearchParams,
   type ExternalPathString,
 } from "expo-router";
-import { Text, View } from "react-native";
+import { Switch, Text, View } from "react-native";
 
 async function getWorkplace(shownId: string): Promise<Workplace> {
   const response = await fetch(
     "http://10.25.9.250:5073/api/workplace/" + shownId,
   );
   if (!response.ok) throw new Error("Kunde inte hämta!");
+  return await response.json();
+}
+async function setAppointed(shownId: string, appointed: boolean) {
+  const response = await fetch(
+    `http://10.25.9.250:5073/api/workplace/${shownId}/${appointed}`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ isApointed: appointed }),
+    },
+  );
+  if (!response.ok) throw new Error("Kunde inte uppdatera");
   return response.json();
 }
 export default function WorkplaceDetail() {
   const { shownId } = useLocalSearchParams<{ shownId: string }>();
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: (appointed: boolean) => setAppointed(shownId, appointed),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["workplace", shownId] });
+      queryClient.invalidateQueries({ queryKey: ["workplaces"] });
+    },
+  });
+
   const { data, isPending, error } = useQuery({
     queryKey: ["workplace", shownId],
     queryFn: () => getWorkplace(shownId),
@@ -51,6 +73,10 @@ export default function WorkplaceDetail() {
           "Ingen hemsida tyvärr"
         )}
       </Text>
+      <Switch
+        value={data?.isAppointed ?? false}
+        onValueChange={(value) => mutation.mutate(value)}
+      />
       {/* Här får man ha delen med antal tidigare lia studenter */}
     </View>
   );
