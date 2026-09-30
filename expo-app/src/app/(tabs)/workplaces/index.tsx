@@ -1,4 +1,5 @@
 import { getProfile, Profile } from "@/api/profile";
+import { getWorkplaces } from "@/api/workplace";
 import NoneMatched from "@/app/none-Matched";
 import { Workplace } from "@/types/workplace";
 import { router } from "expo-router";
@@ -17,15 +18,12 @@ export default function Index() {
   const [workplaces, setWorkplaces] = useState<Workplace[]>([]);
   const [profile, setProfile] = useState<Profile>();
 
-  const getWorkplaces = async () => {
-    try {
-      const respons = await fetch("http://10.25.9.250:5073/api/workplace");
-      const data = (await respons.json()) as Workplace[];
-      setWorkplaces(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  useEffect(() => {
+    Promise.all([
+      getProfile().then(setProfile).catch(console.error),
+      getWorkplaces().then((workplaces) => setWorkplaces(workplaces ?? [])),
+    ]).finally(() => setIsLoading(false));
+  }, []);
   const score = (w: Workplace, p: Profile) => {
     const mine = new Set(
       (p.technologies ?? []).map((t) => t.name.toLowerCase()),
@@ -41,12 +39,6 @@ export default function Index() {
         .filter((w) => w.score > 0)
         .sort((a, b) => b.score - a.score)
     : [];
-  useEffect(() => {
-    Promise.all([
-      getProfile().then(setProfile).catch(console.error),
-      getWorkplaces(),
-    ]).finally(() => setIsLoading(false));
-  }, []);
   return (
     <View style={styles.container}>
       {isLoading ? (

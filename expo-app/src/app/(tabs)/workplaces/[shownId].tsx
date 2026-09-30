@@ -1,4 +1,4 @@
-import { Workplace } from "@/types/workplace";
+import { getWorkplaceWithProfile } from "@/api/workplace";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Link,
@@ -10,16 +10,6 @@ import * as SecureStore from "expo-secure-store";
 import { useEffect, useState } from "react";
 import { Switch, Text, View } from "react-native";
 
-async function getWorkplace(
-  shownId: string,
-  profileId: string,
-): Promise<Workplace> {
-  const response = await fetch(
-    `http://10.25.9.250:5073/api/workplace/${shownId}?profileId=${profileId}`,
-  );
-  if (!response.ok) throw new Error("Kunde inte hämta!");
-  return await response.json();
-}
 async function setAppointed(
   profileId: string,
   shownId: string,
@@ -59,7 +49,7 @@ export default function WorkplaceDetail() {
 
   const { data, isPending, error } = useQuery({
     queryKey: ["workplace", shownId],
-    queryFn: () => getWorkplace(shownId, profileId!),
+    queryFn: () => getWorkplaceWithProfile(shownId, profileId!),
     // Väntar på profileId från secure store
     enabled: !!profileId,
   });
