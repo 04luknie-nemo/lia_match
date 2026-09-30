@@ -8,6 +8,8 @@
 
 # DATA
 lia.db
+lia.db-shm
+lia.db-wal
 
 # User-specific files
 *.rsuser
