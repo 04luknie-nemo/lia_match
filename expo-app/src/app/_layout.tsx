@@ -1,7 +1,6 @@
-import Feather from "@expo/vector-icons/Feather";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { router, Stack } from "expo-router";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Stack } from "expo-router";
+import { StyleSheet, View } from "react-native";
 
 const client = new QueryClient();
 
@@ -14,12 +13,7 @@ export default function RootLayout() {
             name="(tabs)"
             options={{
               title: "",
-              headerShown: true,
-              headerRight: () => (
-                <Pressable onPress={() => router.push("/profile-page")}>
-                  <Feather name="user" size={24} />
-                </Pressable>
-              ),
+              headerShown: false,
             }}
           />
         </Stack>

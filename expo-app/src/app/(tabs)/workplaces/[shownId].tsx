@@ -39,7 +39,7 @@ export default function WorkplaceDetail() {
   const { shownId } = useLocalSearchParams<{ shownId: string }>();
   const queryClient = useQueryClient();
 
-  const [profileId, setProfileId] = useState<string | undefined>(undefined);
+  const [profileId, setProfileId] = useState<string>();
 
   useEffect(() => {
     SecureStore.getItemAsync("profileId").then((value) =>

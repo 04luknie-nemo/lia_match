@@ -1,13 +1,22 @@
 import Feather from "@expo/vector-icons/Feather";
-import { Tabs } from "expo-router";
+import { router, Tabs } from "expo-router";
+import { Pressable } from "react-native";
 
 export default function TabsLayout() {
   return (
-    <Tabs>
+    <Tabs
+      screenOptions={{
+        headerRight: () => (
+          <Pressable onPress={() => router.push("/profile-page")}>
+            <Feather name="user" size={24} />
+          </Pressable>
+        ),
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
+          title: "Companies",
           tabBarIcon: (props) => <Feather name="home" {...props} />,
         }}
       />
@@ -21,16 +30,9 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="settings"
-        options={{
-          title: "Settings",
-          tabBarIcon: (props) => <Feather name="settings" {...props} />,
-        }}
-      />
-      <Tabs.Screen
         name="workplaces"
         options={{
-          title: "Workplaces",
+          title: "Matched Workplaces",
           headerShown: false,
           tabBarIcon: (props) => <Feather name="activity" {...props} />,
         }}

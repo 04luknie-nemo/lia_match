@@ -75,4 +75,6 @@ Presentationen ska innehålla:
 
 - workplaces/index diskuterade jag och claude väg framåt med koden om att hämta profile, matcha den mot företag och lista företagen som matchar, istället för hela listan, som skulle kunna ligga nån annanstans. Claude tycker att nästa steg är att flytta kollen till apiet för att det hör bättre hemma där, men får se.
 
-- Claude utanför hjälper mig att hitta techstack från företagen så att demo matchningen blir bättre :D.
+- Claude i webbläsaren hjälpte mig med att hitta techstack från företagen så att demo matchningen blir bättre :D.
+
+- Claude hjälpte mig lite med att knuffa mig i rätt riktning angående web apiet med endpoints, var så länge sen, men det kommer tillbaka. 

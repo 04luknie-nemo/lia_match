@@ -1,4 +1,3 @@
-import { Profile } from "@/types/profile";
 import * as SecureStore from "expo-secure-store";
 
 interface ProfileInput {
@@ -8,6 +7,11 @@ interface ProfileInput {
 
 interface ProfileResponse {
   id: number;
+}
+export interface Profile {
+  id: number;
+  city: string;
+  technologies: { id: number; name: string }[];
 }
 
 export async function createProfile(profile: ProfileInput) {

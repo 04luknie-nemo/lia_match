@@ -1,6 +1,5 @@
-import { getProfile } from "@/api/profile";
+import { getProfile, Profile } from "@/api/profile";
 import NoneMatched from "@/app/none-Matched";
-import { Profile } from "@/types/profile";
 import { Workplace } from "@/types/workplace";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
