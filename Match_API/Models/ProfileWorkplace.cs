@@ -4,6 +4,7 @@ public class ProfileWorkplace
 {
     public int Id { get; set; }
     public bool IsAppointed { get; set; }
+    public DateTime? Deadline { get; set; }
 
     public int StudentProfileId { get; set; }
     [JsonIgnore]
