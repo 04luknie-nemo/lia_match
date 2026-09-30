@@ -1,4 +1,7 @@
-import { Technology } from "./technology";
+interface Technology {
+  id: number;
+  name: string;
+}
 
 export interface Workplace {
   id: number;
