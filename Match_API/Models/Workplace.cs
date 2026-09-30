@@ -8,6 +8,7 @@ public class Workplace
     public string? WebsiteUrl { get; set; }
     public int PreviousLIAStudents { get; set; } = 0;
     public List<Technology> Technologies { get; set; } = new();
+    public Boolean IsAppointed { get; set; } = false;
 
     public Workplace() { }
 

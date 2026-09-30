@@ -34,4 +34,17 @@ public class WorkplaceController : ControllerBase
         Workplace? workPlace = await _db.Workplaces.FirstOrDefaultAsync(w => w.ShownId == shownId);
         return workPlace is null ? NotFound("Workplace not found") : Ok(workPlace);
     }
+    [HttpPatch("{shownId}/{isAppointed}")]
+    public async Task<IActionResult> UpdateOne(string shownId, bool isAppointed)
+    {
+        Workplace? workplace = await _db.Workplaces.FirstOrDefaultAsync(w => w.ShownId == shownId);
+        if (workplace is null)
+        {
+            return NotFound("Workplace not found");
+        }
+        workplace.IsAppointed = isAppointed;
+        _db.Workplaces.Update(workplace);
+        await _db.SaveChangesAsync();
+        return Ok(workplace);
+    }
 }

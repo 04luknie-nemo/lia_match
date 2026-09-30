@@ -9,4 +9,5 @@ export interface Workplace {
   websiteUrl: string;
   previousLiaStudents: number;
   technologies: Technology[];
+  isAppointed: boolean;
 }
