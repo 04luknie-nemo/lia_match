@@ -24,8 +24,18 @@ public static class SeedData
 
             int previousCount = historyTotals.TryGetValue(name, out var total) ? total : 0;
 
-            db.Workplaces.Add(new Workplace(name, city, applicationUrl, websiteUrl, previousCount));
+            var workplace = new Workplace(name, city, applicationUrl, websiteUrl, previousCount);
+            db.Workplaces.Add(workplace);
+            db.SaveChanges();
+
+            if (TechData.KnownTech.TryGetValue(name, out var techs))
+            {
+                foreach (var tech in techs)
+                {
+                    db.Technologies.Add(new Technology { Name = tech, WorkplaceId = workplace.Id });
+                }
+                db.SaveChanges();
+            }
         }
-        db.SaveChanges();
     }
 }

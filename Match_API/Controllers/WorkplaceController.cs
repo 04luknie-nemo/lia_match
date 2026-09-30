@@ -10,7 +10,17 @@ public class WorkplaceController : ControllerBase
 
     [HttpGet]
     public async Task<IActionResult> GetAll() =>
-        Ok(await _db.Workplaces.ToListAsync());
+        Ok(await _db.Workplaces.Select(w => new
+        {
+            w.Id,
+            w.ShownId,
+            w.BussinessName,
+            w.City,
+            w.ApplicationUrl,
+            w.WebsiteUrl,
+            w.PreviousLIAStudents,
+            technologies = w.Technologies.Select(t => new { t.Id, t.Name })
+        }).ToListAsync());
 
     // [HttpGet("{id}")]
     // public async Task<IActionResult> GetOne(int id)
