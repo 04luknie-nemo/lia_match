@@ -44,4 +44,30 @@ public class ProfileController : ControllerBase
                 .Select(t => new { id = t.Id, name = t.Name })
         });
     }
+    [HttpPatch("{profileId}/appoint/{shownId}")]
+    public async Task<IActionResult> Appoint(int profileId, string shownId, [FromBody] AppointInput input)
+    {
+        Workplace? workplace = await _db.Workplaces.FirstOrDefaultAsync(w => w.ShownId == shownId);
+        if (workplace is null) return NotFound();
+
+        var entry = await _db.ProfileWorkplaces.FirstOrDefaultAsync(pw => pw.StudentProfileId == profileId && pw.WorkplaceId == workplace.Id);
+
+        if (entry is null)
+        {
+            entry = new ProfileWorkplace
+            {
+                StudentProfileId = profileId,
+                WorkplaceId = workplace.Id,
+                IsAppointed = input.IsAppointed
+            };
+            _db.ProfileWorkplaces.Add(entry);
+        }
+        else
+        {
+            entry.IsAppointed = input.IsAppointed;
+        }
+
+        await _db.SaveChangesAsync();
+        return Ok();
+    }
 }
