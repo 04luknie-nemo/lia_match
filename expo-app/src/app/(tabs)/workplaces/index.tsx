@@ -1,8 +1,8 @@
+import { getProfile } from "@/api/profile";
 import NoneMatched from "@/app/none-Matched";
 import { Profile } from "@/types/profile";
 import { Workplace } from "@/types/workplace";
 import { router } from "expo-router";
-import * as SecureStore from "expo-secure-store";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -28,8 +28,10 @@ export default function Index() {
     }
   };
   const score = (w: Workplace, p: Profile) => {
-    const mine = new Set(p.technologies.map((t) => t.name.toLowerCase()));
-    const shared = w.technologies.filter((t) =>
+    const mine = new Set(
+      (p.technologies ?? []).map((t) => t.name.toLowerCase()),
+    );
+    const shared = (w.technologies ?? []).filter((t) =>
       mine.has(t.name.toLowerCase()),
     ).length;
     return shared + (w.city === p.city ? 1 : 0);
@@ -40,24 +42,11 @@ export default function Index() {
         .filter((w) => w.score > 0)
         .sort((a, b) => b.score - a.score)
     : [];
-
-  const getProfile = async () => {
-    try {
-      const id = await SecureStore.getItemAsync("profileId");
-      if (!id) return;
-      const p = await fetch(`http://10.25.9.250:5073/api/profile/${id}`).then(
-        (res) => res.json(),
-      );
-      setProfile(p);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   useEffect(() => {
-    Promise.all([getProfile(), getWorkplaces()]).finally(() =>
-      setIsLoading(false),
-    );
+    Promise.all([
+      getProfile().then(setProfile).catch(console.error),
+      getWorkplaces(),
+    ]).finally(() => setIsLoading(false));
   }, []);
   return (
     <View style={styles.container}>

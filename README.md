@@ -69,3 +69,10 @@ Presentationen ska innehålla:
 2. [] **Ytterligare en valfri extern modul** används i projektet från [reactnative.directory](https://reactnative.directory)
 3. [x] Appen **hämtar data från ett Web-API**
 4. []  **Användningen av AI-verktyg dokumenteras i README** – vilka verktyg du använt, till vad, och hur du verifierat att koden gör det du tror. Ta även upp det i presentationens reflekterande del.
+
+# AI DOKUMENTATION
+- Ber om tips, försöker att jobba med "Pusha mig i rätt riktning utan att ge mig svaret"
+
+- workplaces/index diskuterade jag och claude väg framåt med koden om att hämta profile, matcha den mot företag och lista företagen som matchar, istället för hela listan, som skulle kunna ligga nån annanstans. Claude tycker att nästa steg är att flytta kollen till apiet för att det hör bättre hemma där, men får se.
+
+- Claude utanför hjälper mig att hitta techstack från företagen så att demo matchningen blir bättre :D.

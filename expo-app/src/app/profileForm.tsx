@@ -1,4 +1,4 @@
-import { CreateProfile } from "@/api/profile";
+import { createProfile } from "@/api/profile";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
@@ -17,7 +17,7 @@ export default function ProfileForm({
     setIsSaving(true);
     try {
       const technologies = techs.split(",").map((t) => t.trim());
-      const result = await CreateProfile({ city, technologies });
+      const result = await createProfile({ city, technologies });
       onCreated(result.id);
     } catch (error) {
       console.error(error);
