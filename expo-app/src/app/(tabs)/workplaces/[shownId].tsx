@@ -6,33 +6,51 @@ import {
   useLocalSearchParams,
   type ExternalPathString,
 } from "expo-router";
+import * as SecureStore from "expo-secure-store";
+import { useEffect, useState } from "react";
 import { Switch, Text, View } from "react-native";
 
-async function getWorkplace(shownId: string): Promise<Workplace> {
+async function getWorkplace(
+  shownId: string,
+  profileId: string,
+): Promise<Workplace> {
   const response = await fetch(
-    "http://10.25.9.250:5073/api/workplace/" + shownId,
+    `http://10.25.9.250:5073/api/workplace/${shownId}?profileId=${profileId}`,
   );
   if (!response.ok) throw new Error("Kunde inte hämta!");
   return await response.json();
 }
-async function setAppointed(shownId: string, appointed: boolean) {
+async function setAppointed(
+  profileId: string,
+  shownId: string,
+  appointed: boolean,
+) {
   const response = await fetch(
-    `http://10.25.9.250:5073/api/workplace/${shownId}/${appointed}`,
+    `http://10.25.9.250:5073/api/profile/${profileId}/appoint/${shownId}`,
     {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ isApointed: appointed }),
+      body: JSON.stringify({ IsAppointed: appointed }),
     },
   );
   if (!response.ok) throw new Error("Kunde inte uppdatera");
-  return response.json();
 }
 export default function WorkplaceDetail() {
   const { shownId } = useLocalSearchParams<{ shownId: string }>();
   const queryClient = useQueryClient();
 
+  const [profileId, setProfileId] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    SecureStore.getItemAsync("profileId").then((value) =>
+      setProfileId(value ?? undefined),
+    );
+  }, []);
   const mutation = useMutation({
-    mutationFn: (appointed: boolean) => setAppointed(shownId, appointed),
+    mutationFn: (appointed: boolean) => {
+      if (!profileId) throw new Error("Ingen profil sparad");
+      return setAppointed(profileId, shownId, appointed);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["workplace", shownId] });
       queryClient.invalidateQueries({ queryKey: ["workplaces"] });
@@ -41,7 +59,9 @@ export default function WorkplaceDetail() {
 
   const { data, isPending, error } = useQuery({
     queryKey: ["workplace", shownId],
-    queryFn: () => getWorkplace(shownId),
+    queryFn: () => getWorkplace(shownId, profileId!),
+    // Väntar på profileId från secure store
+    enabled: !!profileId,
   });
 
   if (isPending) return <Text>Laddar...</Text>;
