@@ -58,7 +58,7 @@ public class ProfileController : ControllerBase
             {
                 StudentProfileId = profileId,
                 WorkplaceId = workplace.Id,
-                IsAppointed = input.IsAppointed
+                IsAppointed = input.IsAppointed,
             };
             _db.ProfileWorkplaces.Add(entry);
         }
@@ -69,5 +69,37 @@ public class ProfileController : ControllerBase
 
         await _db.SaveChangesAsync();
         return Ok();
+    }
+    [HttpGet("{profileId}/appoint")]
+    public async Task<IActionResult> GetProfileAppointments(int profileId) =>
+        Ok(await _db.ProfileWorkplaces
+            .Where(pw => pw.StudentProfileId == profileId && pw.IsAppointed)
+            .Select(pw => new
+            {
+                pw.Id,
+                pw.Workplace.ShownId,
+                pw.Workplace.BussinessName,
+                pw.Workplace.City,
+                pw.Deadline
+            })
+            .OrderBy(a => a.Deadline)
+            .ToListAsync());
+
+    [HttpPatch("{profileId}/appoint/{shownId}/deadline")]
+    public async Task<IActionResult> SetDeadline(int profileId, string shownId, [FromBody] DeadlineInput input)
+    {
+        var profileWorkplace = await _db.ProfileWorkplaces.
+            FirstOrDefaultAsync(pw => pw.StudentProfileId == profileId && pw.Workplace.ShownId == shownId);
+
+        if (profileWorkplace is null || profileWorkplace.IsAppointed == false)
+        {
+            return NotFound("Hittar inte en ansökan som matchar profilen och arbetsplatsen");
+        }
+        else
+        {
+            profileWorkplace.Deadline = input.Deadline;
+            await _db.SaveChangesAsync();
+            return Ok("Lyckades lägga till deadline!");
+        }
     }
 }
