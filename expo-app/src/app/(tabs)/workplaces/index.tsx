@@ -1,5 +1,8 @@
+import NoneMatched from "@/app/none-Matched";
+import { Profile } from "@/types/profile";
 import { Workplace } from "@/types/workplace";
 import { router } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -13,6 +16,7 @@ import {
 export default function Index() {
   const [isLoading, setIsLoading] = useState(true);
   const [workplaces, setWorkplaces] = useState<Workplace[]>([]);
+  const [profile, setProfile] = useState<Profile>();
 
   const getWorkplaces = async () => {
     try {
@@ -21,41 +25,71 @@ export default function Index() {
       setWorkplaces(data);
     } catch (error) {
       console.error(error);
-    } finally {
-      setIsLoading(false);
+    }
+  };
+  const score = (w: Workplace, p: Profile) => {
+    const mine = new Set(p.technologies.map((t) => t.name.toLowerCase()));
+    const shared = w.technologies.filter((t) =>
+      mine.has(t.name.toLowerCase()),
+    ).length;
+    return shared + (w.city === p.city ? 1 : 0);
+  };
+  const matched = profile
+    ? workplaces
+        .map((w) => ({ ...w, score: score(w, profile) }))
+        .filter((w) => w.score > 0)
+        .sort((a, b) => b.score - a.score)
+    : [];
+
+  const getProfile = async () => {
+    try {
+      const id = await SecureStore.getItemAsync("profileId");
+      if (!id) return;
+      const p = await fetch(`http://10.25.9.250:5073/api/profile/${id}`).then(
+        (res) => res.json(),
+      );
+      setProfile(p);
+    } catch (error) {
+      console.error(error);
     }
   };
 
   useEffect(() => {
-    getWorkplaces();
+    Promise.all([getProfile(), getWorkplaces()]).finally(() =>
+      setIsLoading(false),
+    );
   }, []);
-  console.log(workplaces);
   return (
     <View style={styles.container}>
       {isLoading ? (
         <ActivityIndicator />
       ) : (
         <View>
-          <Text>Index</Text>
-          <FlatList
-            style={{ width: "100%" }}
-            data={workplaces}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <Pressable
-                style={styles.workplaceCard}
-                onPress={() =>
-                  router.push({
-                    pathname: "/workplaces/[shownId]",
-                    params: { shownId: item.shownId },
-                  })
-                }
-              >
-                <Text>{item.bussinessName}</Text>
-                <Text>{item.city}</Text>
-              </Pressable>
-            )}
-          />
+          <Text>Dina Matchande Företag</Text>
+          {matched.length > 0 ? (
+            <FlatList
+              style={{ width: "100%" }}
+              data={matched}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => (
+                <Pressable
+                  style={styles.workplaceCard}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/workplaces/[shownId]",
+                      params: { shownId: item.shownId },
+                    })
+                  }
+                >
+                  <Text>Poäng: {item.score}</Text>
+                  <Text>{item.bussinessName}</Text>
+                  <Text>{item.city}</Text>
+                </Pressable>
+              )}
+            />
+          ) : (
+            <NoneMatched />
+          )}
         </View>
       )}
     </View>
