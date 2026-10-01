@@ -43,34 +43,34 @@ export default function Index() {
     <View style={styles.container}>
       {isLoading ? (
         <ActivityIndicator />
-      ) : (
+      ) : !profile ? (
+        <Text>Ingen profil finns!</Text>
+      ) : matched.length > 0 ? (
         <View>
           <Text>Dina Matchande Företag</Text>
-          {matched.length > 0 ? (
-            <FlatList
-              style={{ width: "100%" }}
-              data={matched}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => (
-                <Pressable
-                  style={styles.workplaceCard}
-                  onPress={() =>
-                    router.push({
-                      pathname: "/workplaces/[shownId]",
-                      params: { shownId: item.shownId },
-                    })
-                  }
-                >
-                  <Text>Poäng: {item.score}</Text>
-                  <Text>{item.bussinessName}</Text>
-                  <Text>{item.city}</Text>
-                </Pressable>
-              )}
-            />
-          ) : (
-            <NoneMatched />
-          )}
+          <FlatList
+            style={{ width: "100%" }}
+            data={matched}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <Pressable
+                style={styles.workplaceCard}
+                onPress={() =>
+                  router.push({
+                    pathname: "/workplaces/[shownId]",
+                    params: { shownId: item.shownId },
+                  })
+                }
+              >
+                <Text>Poäng: {item.score}</Text>
+                <Text>{item.bussinessName}</Text>
+                <Text>{item.city}</Text>
+              </Pressable>
+            )}
+          />
         </View>
+      ) : (
+        <NoneMatched />
       )}
     </View>
   );
