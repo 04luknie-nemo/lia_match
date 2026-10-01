@@ -78,3 +78,5 @@ Presentationen ska innehålla:
 - Claude i webbläsaren hjälpte mig med att hitta techstack från företagen så att demo matchningen blir bättre :D.
 
 - Claude hjälpte mig lite med att knuffa mig i rätt riktning angående web apiet med endpoints, var så länge sen, men det kommer tillbaka. 
+
+- Claude code fick fram lite kod angående expo-constants, så att ip är flexibelt, inte hårdkodat, och blir olika/fungerar oavset nätverk under utveckling, ska appen lanseras? då "måste API:t ligga på en riktig server."

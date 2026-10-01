@@ -1,3 +1,4 @@
+import { API_URL } from "./config";
 import * as SecureStore from "expo-secure-store";
 
 interface ProfileInput {
@@ -22,7 +23,7 @@ export interface Appoint {
 }
 
 export async function createProfile(profile: ProfileInput) {
-  const response = await fetch("http://10.25.9.250:5073/api/profile", {
+  const response = await fetch(`${API_URL}/profile`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(profile),
@@ -36,7 +37,7 @@ export async function createProfile(profile: ProfileInput) {
 export async function getProfile() {
   const id = await SecureStore.getItemAsync("profileId");
   if (!id) return;
-  const p = await fetch(`http://10.25.9.250:5073/api/profile/${id}`);
+  const p = await fetch(`${API_URL}/profile/${id}`);
   if (p.status === 404) {
     await SecureStore.deleteItemAsync("profileId");
     return;
@@ -51,7 +52,7 @@ export async function getAppoints(profileId: string) {
   if (!profileId) return;
 
   const response = await fetch(
-    `http://10.25.9.250:5073/api/profile/${profileId}/appoint`,
+    `${API_URL}/profile/${profileId}/appoint`,
   );
   if (!response.ok)
     throw new Error("Kunde inte hämta ansökningar till den profilen");
@@ -66,7 +67,7 @@ export async function SetDeadline(
   deadline: Date,
 ) {
   const profileAppoints = await fetch(
-    `http://10.25.9.250:5073/api/profile/${profileId}/appoint/${shownId}/deadline`,
+    `${API_URL}/profile/${profileId}/appoint/${shownId}/deadline`,
     {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },

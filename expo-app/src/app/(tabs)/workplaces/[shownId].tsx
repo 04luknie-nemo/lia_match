@@ -1,3 +1,4 @@
+import { API_URL } from "@/api/config";
 import { getWorkplaceWithProfile } from "@/api/workplace";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -16,7 +17,7 @@ async function setAppointed(
   appointed: boolean,
 ) {
   const response = await fetch(
-    `http://10.25.9.250:5073/api/profile/${profileId}/appoint/${shownId}`,
+    `${API_URL}/profile/${profileId}/appoint/${shownId}`,
     {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
