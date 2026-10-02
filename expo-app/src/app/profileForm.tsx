@@ -1,24 +1,28 @@
-import { createProfile } from "@/api/profile";
+import { Profile } from "@/api/profile";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function ProfileForm({
-  onCreated,
+  initialProfile,
+  onSubmit,
+  submitLabel = "Skapa profil",
 }: {
-  onCreated: (id: number) => void;
+  initialProfile?: Profile;
+  onSubmit: (input: { city: string; technologies: string[] }) => Promise<void>;
+  submitLabel?: string;
 }) {
-  const [city, setCity] = useState("");
-  const [techs, setTechs] = useState("");
+  const [city, setCity] = useState(initialProfile?.city ?? "");
+  const [techs, setTechs] = useState(
+    initialProfile?.technologies.map((t) => t.name).join(", ") ?? "",
+  );
   const [isSaving, setIsSaving] = useState(false);
 
   async function handleSubmit() {
     if (!city.trim() || !techs.trim()) return;
-
     setIsSaving(true);
     try {
       const technologies = techs.split(",").map((t) => t.trim());
-      const result = await createProfile({ city, technologies });
-      onCreated(result.id);
+      await onSubmit({ city, technologies });
     } catch (error) {
       console.error(error);
     } finally {
@@ -47,7 +51,7 @@ export default function ProfileForm({
         disabled={isSaving}
       >
         <Text style={styles.buttonText}>
-          {isSaving ? "Sparar..." : "Skapa profil"}
+          {isSaving ? "Sparar..." : submitLabel}
         </Text>
       </Pressable>
     </View>
