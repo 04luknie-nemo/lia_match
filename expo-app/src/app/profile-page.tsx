@@ -6,6 +6,8 @@ import {
   updateProfile,
 } from "@/api/profile";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import * as Haptics from "expo-haptics";
+import * as Notifications from "expo-notifications";
 import { Stack } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { useEffect, useState } from "react";
@@ -61,10 +63,33 @@ export default function ProfilePage() {
       if (!profileId) throw new Error("Ingen profil sparad");
       return SetDeadline(profileId, shownId, deadline);
     },
-    onSuccess: () => {
+    onSuccess: async (_data, { shownId, deadline }) => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       queryClient.invalidateQueries({ queryKey: ["appoints"] });
       setSelectedShownId("");
       setDeadlineText("");
+
+      const remindAt = new Date(deadline);
+      remindAt.setDate(remindAt.getDate() - 1);
+      remindAt.setHours(9, 0, 0, 0);
+
+      await Notifications.cancelScheduledNotificationAsync(shownId);
+      if (remindAt > new Date()) {
+        await Notifications.scheduleNotificationAsync({
+          identifier: shownId,
+          content: {
+            title: "Deadline imorgon!",
+            body: "Glöm inte att skicka in din ansökan :D",
+          },
+          trigger: {
+            type: Notifications.SchedulableTriggerInputTypes.DATE,
+            date: remindAt,
+          },
+        });
+      }
+    },
+    onError: () => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     },
   });
 
