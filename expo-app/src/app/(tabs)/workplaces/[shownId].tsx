@@ -1,6 +1,9 @@
 import { API_URL } from "@/api/config";
 import { getWorkplaceWithProfile } from "@/api/workplace";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Checkbox } from "expo-checkbox";
+import * as Clipboard from "expo-clipboard";
+import * as Haptics from "expo-haptics";
 import {
   Link,
   Stack,
@@ -9,7 +12,7 @@ import {
 } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { useEffect, useState } from "react";
-import { Switch, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 async function setAppointed(
   profileId: string,
@@ -31,6 +34,14 @@ export default function WorkplaceDetail() {
   const queryClient = useQueryClient();
 
   const [profileId, setProfileId] = useState<string>();
+  const [isCopied, setIsCopied] = useState(false);
+
+  async function handleCopied(text: string) {
+    await Clipboard.setStringAsync(text);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
+  }
 
   useEffect(() => {
     SecureStore.getItemAsync("profileId").then((value) =>
@@ -68,15 +79,20 @@ export default function WorkplaceDetail() {
       />
       <Text>Företag: {data?.bussinessName}</Text>
       <Text>Ligger i {data?.city}</Text>
-      <Text>
+      <View>
         {data?.applicationUrl ? (
-          <Link href={data?.applicationUrl as ExternalPathString}>
-            Ansök här!
-          </Link>
+          <View>
+            <Link href={data?.applicationUrl as ExternalPathString}>
+              Ansök här!
+            </Link>
+            <Pressable onPress={() => handleCopied(data.applicationUrl)}>
+              <Text>{isCopied ? "Kopierad!" : "Kopiera Länk!"}</Text>
+            </Pressable>
+          </View>
         ) : (
           "Ingen länk tyvärr"
         )}
-      </Text>
+      </View>
       <Text>
         {data?.websiteUrl ? (
           <Link href={data?.websiteUrl as ExternalPathString}>Website här</Link>
@@ -84,7 +100,7 @@ export default function WorkplaceDetail() {
           "Ingen hemsida tyvärr"
         )}
       </Text>
-      <Switch
+      <Checkbox
         value={data?.isAppointed ?? false}
         onValueChange={(value) => mutation.mutate(value)}
       />

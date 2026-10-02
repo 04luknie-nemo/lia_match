@@ -18,7 +18,7 @@ SÅ KÖR DU:
 # Komponenter och moduler
 
 [x] 4 RN-komponenter, klart (FlatList, TextInput, Pressable, View/Text, Switch).
-[x] 4 Expo-moduler, 4 av 4 klar (secure-store, haptics, notifications, clipboard).
+[x] 4 Expo-moduler, 5 av 4 klar (secure-store, haptics, notifications, clipboard, checkbox).
 
 ## Inlämning
 
