@@ -102,4 +102,21 @@ public class ProfileController : ControllerBase
             return Ok("Lyckades lägga till deadline!");
         }
     }
+    [HttpPut("{profileId}")]
+    public async Task<IActionResult> UpdateProfile(int profileId, [FromBody] ProfileInput input)
+    {
+        var profile = await _db.StudentProfiles
+            .Include(sp => sp.ProfileTechnologies)
+            .FirstOrDefaultAsync(p => p.Id == profileId);
+        if (profile is null)
+        {
+            return NotFound("Profilen finns inte");
+        }
+        profile.City = input.City;
+        profile.ProfileTechnologies = input.Technologies
+            .Select(name => new ProfileTechnology { Name = name })
+            .ToList();
+        await _db.SaveChangesAsync();
+        return Ok();
+    }
 }
