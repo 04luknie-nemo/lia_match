@@ -19,7 +19,7 @@ export interface Appoint {
   shownId: string;
   bussinessName: string;
   city: string;
-  deadline: string | null;
+  deadline: Date;
 }
 
 export async function createProfile(profile: ProfileInput) {

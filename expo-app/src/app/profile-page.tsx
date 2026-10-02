@@ -14,6 +14,7 @@ import {
   FlatList,
   Pressable,
   Text,
+  TextInput,
   View,
 } from "react-native";
 import ProfileForm from "./profileForm";
@@ -24,8 +25,19 @@ export default function ProfilePage() {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
 
+  const [selectedShownId, setSelectedShownId] = useState<string>("");
+  const [deadlineText, setDeadlineText] = useState<string>("");
+
   function handleEdit() {
     setIsEditing(true);
+  }
+
+  function handleSetDeadline() {
+    const deadline = new Date(deadlineText);
+    if (!selectedShownId || isNaN(deadline.getTime())) {
+      return;
+    }
+    mutation.mutate({ shownId: selectedShownId, deadline });
   }
 
   const {
@@ -51,6 +63,8 @@ export default function ProfilePage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["appoints"] });
+      setSelectedShownId("");
+      setDeadlineText("");
     },
   });
 
@@ -94,20 +108,49 @@ export default function ProfilePage() {
             <Pressable onPress={handleEdit}>
               <Text>Edit</Text>
             </Pressable>
-            <View>
-              <Text>Ansökningar valda:</Text>
-              <FlatList
-                data={data}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => (
-                  <View>
-                    <Text>{item.bussinessName}</Text>
-                    <Text>{item.city}</Text>
-                    <Text>{item.deadline ?? "Ingen deadline satt!"}</Text>
-                  </View>
-                )}
-              />
-            </View>
+            {selectedShownId ? (
+              <View>
+                <TextInput
+                  value={deadlineText}
+                  onChangeText={setDeadlineText}
+                  placeholder="ÅÅÅÅ-MM-DD"
+                />
+                <Pressable
+                  onPress={handleSetDeadline}
+                  disabled={mutation.isPaused}
+                >
+                  <Text>
+                    {mutation.isPending ? "Sparar..." : "Spara Deadline"}
+                  </Text>
+                </Pressable>
+                <Pressable onPress={() => setSelectedShownId("")}>
+                  <Text>Avbryt</Text>
+                </Pressable>
+              </View>
+            ) : (
+              <View>
+                <Text>Ansökningar valda:</Text>
+                <FlatList
+                  data={data}
+                  keyExtractor={(item) => item.id.toString()}
+                  renderItem={({ item }) => (
+                    <View>
+                      <Pressable
+                        onPress={() => setSelectedShownId(item.shownId)}
+                      >
+                        <Text>{item.bussinessName}</Text>
+                      </Pressable>
+                      <Text>{item.city}</Text>
+                      <Text>
+                        {item.deadline
+                          ? new Date(item.deadline!).toLocaleDateString("sv-SE")
+                          : "Ingen deadline satt!"}
+                      </Text>
+                    </View>
+                  )}
+                />
+              </View>
+            )}
           </View>
         )
       ) : (
