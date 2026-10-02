@@ -17,8 +17,8 @@ SÅ KÖR DU:
         - dotnet run
 # Komponenter och moduler
 
-[x] 4 RN-komponenter, klart (FlatList, TextInput, Pressable, View/Text).
-[] 4 Expo-moduler, 1 av 4 klar (secure-store). Saknas: haptics, notifications, clipboard.
+[x] 4 RN-komponenter, klart (FlatList, TextInput, Pressable, View/Text, Switch).
+[x] 4 Expo-moduler, 4 av 4 klar (secure-store, haptics, notifications, clipboard).
 
 ## Inlämning
 
@@ -55,8 +55,8 @@ Presentationen ska innehålla:
 ## Krav för godkänt (G)
 
 1.  [x] Projektet använder minst **4 RN-komponenter** och 
-1b. []  minst **4 moduler från Expo SDK**
-2.  [x]  De använda komponenterna och modulerna är **antecknade i README.md**, tillsammans med en lista över uppfyllda krav
+1b. [x]  minst **4 moduler från Expo SDK**
+2.  []  De använda komponenterna och modulerna är **antecknade i README.md**, tillsammans med en lista över uppfyllda krav
 3.  [x] **Expo Router** används för navigering i appen, och minst en skärm tar emot en parameter
 4.  [x] **Git och GitHub** har använts, med commits spridda över arbetets gång
 5.  [x]  Projektmappen innehåller en **README.md** enligt beskrivningen ovan
@@ -68,9 +68,9 @@ Presentationen ska innehålla:
 1. Alla punkter för godkänt är uppfyllda
 2. [] **Ytterligare en valfri extern modul** används i projektet från [reactnative.directory](https://reactnative.directory)
 3. [x] Appen **hämtar data från ett Web-API**
-4. []  **Användningen av AI-verktyg dokumenteras i README** – vilka verktyg du använt, till vad, och hur du verifierat att koden gör det du tror. Ta även upp det i presentationens reflekterande del.
+4. [x]  **Användningen av AI-verktyg dokumenteras i README** – vilka verktyg du använt, till vad, och hur du verifierat att koden gör det du tror. Ta även upp det i presentationens reflekterande del.
 
-# AI DOKUMENTATION
+# AI DOKUMENTATION - OBS jag har inte vibe kodat i den form att ai skrivit och tagit över!
 - Ber om tips, försöker att jobba med "Pusha mig i rätt riktning utan att ge mig svaret"
 
 - workplaces/index diskuterade jag och claude väg framåt med koden om att hämta profile, matcha den mot företag och lista företagen som matchar, istället för hela listan, som skulle kunna ligga nån annanstans. Claude tycker att nästa steg är att flytta kollen till apiet för att det hör bättre hemma där, men får se.
@@ -80,3 +80,5 @@ Presentationen ska innehålla:
 - Claude hjälpte mig lite med att knuffa mig i rätt riktning angående web apiet med endpoints, var så länge sen, men det kommer tillbaka. 
 
 - Claude code fick fram lite kod angående expo-constants, så att ip är flexibelt, inte hårdkodat, och blir olika/fungerar oavset nätverk under utveckling, ska appen lanseras? då "måste API:t ligga på en riktig server."
+
+- Det var smidigt att lägga till notifications och haptics, bollade lite med claude om hur man fick fram koden, 
