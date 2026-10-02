@@ -88,19 +88,18 @@ public class ProfileController : ControllerBase
     [HttpPatch("{profileId}/appoint/{shownId}/deadline")]
     public async Task<IActionResult> SetDeadline(int profileId, string shownId, [FromBody] DeadlineInput input)
     {
+        var dateNow = DateTime.UtcNow.Date;
+        if (input.Deadline < dateNow)
+            return BadRequest("Du kan inte sätta en deadline i dåtiden!");
         var profileWorkplace = await _db.ProfileWorkplaces.
             FirstOrDefaultAsync(pw => pw.StudentProfileId == profileId && pw.Workplace.ShownId == shownId);
-
         if (profileWorkplace is null || profileWorkplace.IsAppointed == false)
         {
             return NotFound("Hittar inte en ansökan som matchar profilen och arbetsplatsen");
         }
-        else
-        {
-            profileWorkplace.Deadline = input.Deadline;
-            await _db.SaveChangesAsync();
-            return Ok("Lyckades lägga till deadline!");
-        }
+        profileWorkplace.Deadline = input.Deadline;
+        await _db.SaveChangesAsync();
+        return Ok("Lyckades lägga till deadline!");
     }
     [HttpPut("{profileId}")]
     public async Task<IActionResult> UpdateProfile(int profileId, [FromBody] ProfileInput input)
