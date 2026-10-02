@@ -1,15 +1,32 @@
-import { getAppoints, getProfile, SetDeadline } from "@/api/profile";
+import {
+  createProfile,
+  getAppoints,
+  getProfile,
+  SetDeadline,
+  updateProfile,
+} from "@/api/profile";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  Text,
+  View,
+} from "react-native";
 import ProfileForm from "./profileForm";
 
 export default function ProfilePage() {
   const [profileId, setProfileId] = useState<string>();
   const [isLoading, setIsLoading] = useState(true);
   const queryClient = useQueryClient();
+  const [isEditing, setIsEditing] = useState(false);
+
+  function handleEdit() {
+    setIsEditing(true);
+  }
 
   const {
     data: profile,
@@ -58,12 +75,25 @@ export default function ProfilePage() {
       ) : profileId ? (
         isPending ? (
           <ActivityIndicator />
+        ) : isEditing ? (
+          <ProfileForm
+            initialProfile={profile!}
+            submitLabel="Spara ändringar"
+            onSubmit={async (input) => {
+              await updateProfile(profileId!, input);
+              queryClient.invalidateQueries({ queryKey: ["profile"] });
+              setIsEditing(false);
+            }}
+          />
         ) : (
           <View>
             <Text>Ort: {profile?.city}</Text>
             <Text>
               Tekniker: {profile?.technologies.map((t) => t.name).join(", ")}
             </Text>
+            <Pressable onPress={handleEdit}>
+              <Text>Edit</Text>
+            </Pressable>
             <View>
               <Text>Ansökningar valda:</Text>
               <FlatList
@@ -81,7 +111,12 @@ export default function ProfilePage() {
           </View>
         )
       ) : (
-        <ProfileForm onCreated={(id) => setProfileId(id.toString())} />
+        <ProfileForm
+          onSubmit={async (input) => {
+            const result = await createProfile(input);
+            setProfileId(result.id.toString());
+          }}
+        />
       )}
     </View>
   );

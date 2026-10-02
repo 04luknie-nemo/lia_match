@@ -1,5 +1,5 @@
-import { API_URL } from "./config";
 import * as SecureStore from "expo-secure-store";
+import { API_URL } from "./config";
 
 interface ProfileInput {
   city: string;
@@ -51,9 +51,7 @@ export async function getProfile() {
 export async function getAppoints(profileId: string) {
   if (!profileId) return;
 
-  const response = await fetch(
-    `${API_URL}/profile/${profileId}/appoint`,
-  );
+  const response = await fetch(`${API_URL}/profile/${profileId}/appoint`);
   if (!response.ok)
     throw new Error("Kunde inte hämta ansökningar till den profilen");
 
@@ -76,4 +74,26 @@ export async function SetDeadline(
   );
   if (!profileAppoints.ok)
     throw new Error("Något gick fel vid sättandet av deadline");
+}
+
+export async function updateProfile(profileId: string, input: ProfileInput) {
+  const response = await fetch(`${API_URL}/profile/${profileId}`);
+
+  if (!response.ok)
+    throw new Error(`Kunde inte hämta profil (${response.status})`);
+
+  const update = await fetch(`${API_URL}/profile/${profileId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      city: input.city,
+      technologies: input.technologies,
+    }),
+  });
+  if (!update.ok) {
+    throw new Error(
+      `Kunde inte uppdatera profilen med de nya värdena (${update.status})`,
+    );
+  }
+  return update;
 }
