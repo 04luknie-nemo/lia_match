@@ -1,7 +1,13 @@
 import { getWorkplaces } from "@/api/workplace";
 import { Workplace } from "@/types/workplace";
 import { useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 export default function HomeScreen() {
   const [workplaces, setWorkPlaces] = useState<Workplace[]>();
   const [isLoading, setIsLoading] = useState(true);
@@ -12,18 +18,22 @@ export default function HomeScreen() {
       .finally(() => setIsLoading(false));
   }, []);
   if (isLoading) {
-    return <Text>Loading...</Text>;
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator />
+      </View>
+    );
   }
   return (
     <View style={styles.container}>
-      <Text>List of workplaces</Text>
+      <Text style={styles.header}>Alla företag</Text>
       <FlatList
-        style={{ width: "100%" }}
+        style={styles.list}
         data={workplaces}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.workplaceCard}>
-            <Text>{item.bussinessName}</Text>
+            <Text style={styles.cardTitle}>{item.bussinessName}</Text>
             <Text>{item.city}</Text>
           </View>
         )}
@@ -35,14 +45,29 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 16,
+  },
+  centered: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    padding: 16,
+  },
+  header: {
+    fontSize: 20,
+    alignSelf: "center",
+    marginBottom: 12,
+  },
+  list: {
+    width: "100%",
   },
   workplaceCard: {
     borderWidth: 1,
     borderColor: "black",
+    borderRadius: 10,
     padding: 8,
     marginBottom: 8,
+  },
+  cardTitle: {
+    fontWeight: "600",
   },
 });

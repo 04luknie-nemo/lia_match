@@ -46,10 +46,10 @@ export default function Index() {
       ) : !profile ? (
         <Text>Ingen profil finns!</Text>
       ) : matched.length > 0 ? (
-        <View>
-          <Text>Dina Matchande Företag</Text>
+        <View style={styles.listWrapper}>
+          <Text style={styles.header}>Dina matchande företag</Text>
           <FlatList
-            style={{ width: "100%" }}
+            style={styles.list}
             data={matched}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
@@ -83,10 +83,24 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 16,
   },
+  listWrapper: {
+    flex: 1,
+    width: "100%",
+  },
+  list: {
+    width: "100%",
+  },
   workplaceCard: {
     borderWidth: 1,
     borderColor: "black",
+    borderRadius: 10,
     padding: 8,
     marginBottom: 8,
+    width: "100%",
+  },
+  header: {
+    fontSize: 20,
+    alignSelf: "center",
+    marginBottom: 12,
   },
 });
