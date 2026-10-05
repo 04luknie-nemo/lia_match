@@ -2,8 +2,8 @@ import { getProfile, Profile } from "@/api/profile";
 import { getWorkplaces } from "@/api/workplace";
 import NoneMatched from "@/app/none-Matched";
 import { Workplace } from "@/types/workplace";
-import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -18,27 +18,53 @@ export default function Index() {
   const [workplaces, setWorkplaces] = useState<Workplace[]>([]);
   const [profile, setProfile] = useState<Profile>();
 
-  useEffect(() => {
-    Promise.all([
-      getProfile().then(setProfile).catch(console.error),
-      getWorkplaces().then((workplaces) => setWorkplaces(workplaces ?? [])),
-    ]).finally(() => setIsLoading(false));
-  }, []);
+  function normalise(t: string) {
+    return t.toLowerCase().trim();
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+
+      const fetchProfile = async () => {
+        try {
+          const [fetchedProfile, fetchedWorkplaces] = await Promise.all([
+            getProfile().catch(console.error),
+            getWorkplaces().catch(console.error),
+          ]).finally(() => setIsLoading(false));
+
+          if (isActive) {
+            setProfile(fetchedProfile ?? undefined);
+            setWorkplaces(fetchedWorkplaces ?? []);
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      };
+
+      fetchProfile();
+
+      return () => {
+        isActive = false;
+      };
+    }, []),
+  );
+
   const score = (w: Workplace, p: Profile) => {
-    const mine = new Set(
-      (p.technologies ?? []).map((t) => t.name.toLowerCase()),
-    );
+    const mine = new Set((p.technologies ?? []).map((t) => normalise(t.name)));
     const shared = (w.technologies ?? []).filter((t) =>
-      mine.has(t.name.toLowerCase()),
+      mine.has(normalise(t.name)),
     ).length;
-    return shared + (w.city === p.city ? 1 : 0);
+    return shared + (normalise(w.city) === normalise(p.city) ? 1 : 0);
   };
+
   const matched = profile
     ? workplaces
         .map((w) => ({ ...w, score: score(w, profile) }))
         .filter((w) => w.score > 0)
         .sort((a, b) => b.score - a.score)
     : [];
+
   return (
     <View style={styles.container}>
       {isLoading ? (
