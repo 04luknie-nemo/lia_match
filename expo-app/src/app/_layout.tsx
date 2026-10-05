@@ -3,6 +3,7 @@ import * as Notifications from "expo-notifications";
 import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
+import { ThemeProvider, useTheme } from "@/theme/ThemeContext";
 
 const client = new QueryClient();
 
@@ -21,18 +22,34 @@ export default function RootLayout() {
   }, []);
   return (
     <QueryClientProvider client={client}>
-      <View style={styles.container}>
-        <Stack>
-          <Stack.Screen
-            name="(tabs)"
-            options={{
-              title: "",
-              headerShown: false,
-            }}
-          />
-        </Stack>
-      </View>
+      <ThemeProvider>
+        <View style={styles.container}>
+          <ThemedStack />
+        </View>
+      </ThemeProvider>
     </QueryClientProvider>
+  );
+}
+
+// Egen komponent så att useTheme körs inuti ThemeProvider
+function ThemedStack() {
+  const { theme } = useTheme();
+  return (
+    <Stack
+      screenOptions={{
+        headerStyle: { backgroundColor: theme.header },
+        headerTintColor: theme.headerText,
+        contentStyle: { backgroundColor: theme.background },
+      }}
+    >
+      <Stack.Screen
+        name="(tabs)"
+        options={{
+          title: "",
+          headerShown: false,
+        }}
+      />
+    </Stack>
   );
 }
 
