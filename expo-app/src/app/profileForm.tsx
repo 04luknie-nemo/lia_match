@@ -31,14 +31,15 @@ export default function ProfileForm({
   }
 
   return (
-    <View>
-      <Text>Ort</Text>
+    <View style={styles.container}>
+      <Text style={styles.label}>Ort</Text>
       <TextInput
         style={styles.input}
         placeholder="Skriv ort här"
         value={city}
         onChangeText={setCity}
       />
+      <Text style={styles.label}>Tekniker</Text>
       <TextInput
         style={styles.input}
         placeholder="Tekniker, separera med ','"
@@ -57,6 +58,7 @@ export default function ProfileForm({
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: { padding: 16, gap: 8 },
   label: { fontWeight: "600" },

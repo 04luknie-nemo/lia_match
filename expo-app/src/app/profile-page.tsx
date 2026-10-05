@@ -15,6 +15,7 @@ import {
   ActivityIndicator,
   FlatList,
   Pressable,
+  StyleSheet,
   Text,
   TextInput,
   View,
@@ -104,10 +105,16 @@ export default function ProfilePage() {
     queryFn: () => getAppoints(profileId!),
     enabled: !!profileId,
   });
-  if (error) return <Text>{error.message}</Text>;
+  if (error) {
+    return (
+      <View style={styles.centered}>
+        <Text>{error.message}</Text>
+      </View>
+    );
+  }
 
   return (
-    <View>
+    <View style={styles.container}>
       <Stack.Screen options={{ title: "Profil" }} />
       {isLoading ? (
         <ActivityIndicator />
@@ -125,53 +132,67 @@ export default function ProfilePage() {
             }}
           />
         ) : (
-          <View>
-            <Text>Ort: {profile?.city}</Text>
-            <Text>
-              Tekniker: {profile?.technologies.map((t) => t.name).join(", ")}
-            </Text>
-            <Pressable onPress={handleEdit}>
-              <Text>Edit</Text>
-            </Pressable>
+          <View style={styles.content}>
+            <View style={styles.card}>
+              <Text>
+                <Text style={styles.label}>Ort: </Text>
+                {profile?.city}
+              </Text>
+              <Text>
+                <Text style={styles.label}>Tekniker: </Text>
+                {profile?.technologies.map((t) => t.name).join(", ")}
+              </Text>
+              <Pressable style={styles.button} onPress={handleEdit}>
+                <Text style={styles.buttonText}>Redigera profil</Text>
+              </Pressable>
+            </View>
             {selectedShownId ? (
-              <View>
+              <View style={styles.card}>
+                <Text style={styles.label}>Sätt deadline</Text>
                 <TextInput
+                  style={styles.input}
                   value={deadlineText}
                   onChangeText={setDeadlineText}
                   placeholder="ÅÅÅÅ-MM-DD"
                 />
                 <Pressable
+                  style={styles.button}
                   onPress={handleSetDeadline}
                   disabled={mutation.isPaused}
                 >
-                  <Text>
-                    {mutation.isPending ? "Sparar..." : "Spara Deadline"}
+                  <Text style={styles.buttonText}>
+                    {mutation.isPending ? "Sparar..." : "Spara deadline"}
                   </Text>
                 </Pressable>
-                <Pressable onPress={() => setSelectedShownId("")}>
-                  <Text>Avbryt</Text>
+                <Pressable
+                  style={styles.secondaryButton}
+                  onPress={() => setSelectedShownId("")}
+                >
+                  <Text style={styles.secondaryButtonText}>Avbryt</Text>
                 </Pressable>
               </View>
             ) : (
-              <View>
-                <Text>Ansökningar valda:</Text>
+              <View style={styles.listWrapper}>
+                <Text style={styles.header}>Ansökningar valda</Text>
+                <Text style={styles.hint}>
+                  Tryck på ett företag för att sätta deadline
+                </Text>
                 <FlatList
                   data={data}
                   keyExtractor={(item) => item.id.toString()}
                   renderItem={({ item }) => (
-                    <View>
-                      <Pressable
-                        onPress={() => setSelectedShownId(item.shownId)}
-                      >
-                        <Text>{item.bussinessName}</Text>
-                      </Pressable>
+                    <Pressable
+                      style={styles.listCard}
+                      onPress={() => setSelectedShownId(item.shownId)}
+                    >
+                      <Text style={styles.label}>{item.bussinessName}</Text>
                       <Text>{item.city}</Text>
                       <Text>
                         {item.deadline
                           ? new Date(item.deadline!).toLocaleDateString("sv-SE")
                           : "Ingen deadline satt!"}
                       </Text>
-                    </View>
+                    </Pressable>
                   )}
                 />
               </View>
@@ -189,3 +210,70 @@ export default function ProfilePage() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  centered: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 16,
+  },
+  content: {
+    flex: 1,
+    gap: 16,
+  },
+  card: {
+    borderWidth: 1,
+    borderColor: "black",
+    borderRadius: 10,
+    padding: 12,
+    gap: 8,
+  },
+  listWrapper: {
+    flex: 1,
+  },
+  listCard: {
+    borderWidth: 1,
+    borderColor: "black",
+    borderRadius: 10,
+    padding: 8,
+    marginBottom: 8,
+  },
+  header: {
+    fontSize: 20,
+    alignSelf: "center",
+  },
+  hint: {
+    alignSelf: "center",
+    color: "#555",
+    marginBottom: 12,
+  },
+  label: {
+    fontWeight: "600",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    padding: 10,
+  },
+  button: {
+    backgroundColor: "#000",
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  buttonText: { color: "#fff", fontWeight: "600" },
+  secondaryButton: {
+    borderWidth: 1,
+    borderColor: "#000",
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  secondaryButtonText: { fontWeight: "600" },
+});
