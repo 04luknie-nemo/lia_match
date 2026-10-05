@@ -12,7 +12,13 @@ import {
 } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { useEffect, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 async function setAppointed(
   profileId: string,
@@ -66,45 +72,136 @@ export default function WorkplaceDetail() {
     enabled: !!profileId,
   });
 
-  if (isPending) return <Text>Laddar...</Text>;
-  if (error) return <Text>{error.message}</Text>;
+  if (isPending) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+  if (error) {
+    return (
+      <View style={styles.centered}>
+        <Text>{error.message}</Text>
+      </View>
+    );
+  }
 
   return (
-    <View>
+    <View style={styles.container}>
       <Stack.Screen
         options={{
           title: "Details",
           headerBackTitle: "Back",
         }}
       />
-      <Text>Företag: {data?.bussinessName}</Text>
-      <Text>Ligger i {data?.city}</Text>
-      <View>
+      <Text style={styles.header}>{data?.bussinessName}</Text>
+      <Text style={styles.subtitle}>Ligger i {data?.city}</Text>
+
+      <View style={styles.card}>
+        <Text style={styles.label}>Ansökan</Text>
         {data?.applicationUrl ? (
-          <View>
-            <Link href={data?.applicationUrl as ExternalPathString}>
+          <View style={styles.row}>
+            <Link
+              style={styles.link}
+              href={data.applicationUrl as ExternalPathString}
+            >
               Ansök här!
             </Link>
-            <Pressable onPress={() => handleCopied(data.applicationUrl)}>
-              <Text>{isCopied ? "Kopierad!" : "Kopiera Länk!"}</Text>
+            <Pressable
+              style={styles.smallButton}
+              onPress={() => handleCopied(data.applicationUrl)}
+            >
+              <Text style={styles.smallButtonText}>
+                {isCopied ? "Kopierad!" : "Kopiera länk"}
+              </Text>
             </Pressable>
           </View>
         ) : (
-          "Ingen länk tyvärr"
+          <Text>Ingen länk tyvärr</Text>
         )}
       </View>
-      <Text>
+
+      <View style={styles.card}>
+        <Text style={styles.label}>Hemsida</Text>
         {data?.websiteUrl ? (
-          <Link href={data?.websiteUrl as ExternalPathString}>Website här</Link>
+          <Link
+            style={styles.link}
+            href={data.websiteUrl as ExternalPathString}
+          >
+            Besök hemsidan
+          </Link>
         ) : (
-          "Ingen hemsida tyvärr"
+          <Text>Ingen hemsida tyvärr</Text>
         )}
-      </Text>
-      <Checkbox
-        value={data?.isAppointed ?? false}
-        onValueChange={(value) => mutation.mutate(value)}
-      />
+      </View>
+
+      <View style={[styles.card, styles.row]}>
+        <Text style={styles.label}>Har sökt</Text>
+        <Checkbox
+          style={styles.checkbox}
+          value={data?.isAppointed ?? false}
+          onValueChange={(value) => mutation.mutate(value)}
+        />
+      </View>
       {/* Här får man ha delen med antal tidigare lia studenter */}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+    gap: 12,
+  },
+  centered: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 16,
+  },
+  header: {
+    fontSize: 22,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  subtitle: {
+    textAlign: "center",
+    color: "#555",
+    marginBottom: 8,
+  },
+  card: {
+    borderWidth: 1,
+    borderColor: "black",
+    borderRadius: 10,
+    padding: 12,
+    gap: 6,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  label: {
+    fontWeight: "600",
+  },
+  link: {
+    color: "#1a73e8",
+    textDecorationLine: "underline",
+  },
+  smallButton: {
+    backgroundColor: "#000",
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+  },
+  smallButtonText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+  },
+});
