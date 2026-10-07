@@ -1,4 +1,4 @@
-import * as SecureStore from "expo-secure-store";
+import * as SecureStore from "@/storage";
 import { API_URL } from "./config";
 
 interface ProfileInput {

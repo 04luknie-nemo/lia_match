@@ -1,6 +1,6 @@
 import { getAppoints } from "@/api/profile";
 import { useQuery } from "@tanstack/react-query";
-import * as SecureStore from "expo-secure-store";
+import * as SecureStore from "@/storage";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,

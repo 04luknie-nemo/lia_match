@@ -1,5 +1,6 @@
 import { API_URL } from "@/api/config";
 import { getWorkplaceWithProfile } from "@/api/workplace";
+import * as SecureStore from "@/storage";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Checkbox } from "expo-checkbox";
 import * as Clipboard from "expo-clipboard";
@@ -10,7 +11,6 @@ import {
   useLocalSearchParams,
   type ExternalPathString,
 } from "expo-router";
-import * as SecureStore from "expo-secure-store";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -35,6 +35,7 @@ async function setAppointed(
   );
   if (!response.ok) throw new Error("Kunde inte uppdatera");
 }
+
 export default function WorkplaceDetail() {
   const { shownId } = useLocalSearchParams<{ shownId: string }>();
   const queryClient = useQueryClient();

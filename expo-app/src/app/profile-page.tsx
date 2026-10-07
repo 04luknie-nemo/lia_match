@@ -9,7 +9,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import * as Notifications from "expo-notifications";
 import { Stack } from "expo-router";
-import * as SecureStore from "expo-secure-store";
+import * as SecureStore from "@/storage";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
