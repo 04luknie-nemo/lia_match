@@ -1,9 +1,9 @@
+import { ThemeProvider, useTheme } from "@/theme/ThemeContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as Notifications from "expo-notifications";
 import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
-import { ThemeProvider, useTheme } from "@/theme/ThemeContext";
 
 const client = new QueryClient();
 

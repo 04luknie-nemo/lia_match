@@ -34,6 +34,7 @@ export async function createProfile(profile: ProfileInput) {
   await SecureStore.setItemAsync("profileId", data.id.toString());
   return data;
 }
+
 export async function getProfile() {
   const id = await SecureStore.getItemAsync("profileId");
   if (!id) return;

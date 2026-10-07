@@ -22,6 +22,11 @@ export default function Index() {
     return t.toLowerCase().trim();
   }
 
+  // Ifall du läser detta david, ja useQuery hade varit mer konsekvent gentemot appen
+  // och mindre kod plus att useQuery med invalidate... hämtar bara om något ändras
+  // jämfört med useFocusEffect som hämtar när denna sidan är i fokus
+  // MEN jag hittade useFocusEffect och ville prova nåt nytt och vidga min kunskap :D.
+
   useFocusEffect(
     useCallback(() => {
       let isActive = true;
