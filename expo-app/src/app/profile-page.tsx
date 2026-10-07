@@ -23,13 +23,14 @@ import {
 import ProfileForm from "./profileForm";
 
 export default function ProfilePage() {
+  const queryClient = useQueryClient();
+
   const [profileId, setProfileId] = useState<string>();
   const [isLoading, setIsLoading] = useState(true);
-  const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
-
   const [selectedShownId, setSelectedShownId] = useState<string>("");
   const [deadlineText, setDeadlineText] = useState<string>("");
+  const [reminderTime, setReminderTime] = useState<string>("09:00");
 
   function handleEdit() {
     setIsEditing(true);
@@ -37,10 +38,16 @@ export default function ProfilePage() {
 
   function handleSetDeadline() {
     const deadline = new Date(deadlineText);
-    if (!selectedShownId || isNaN(deadline.getTime())) {
+    // Godkänner t.ex. "9:00" och "09:30"
+    const time = reminderTime.match(/^(\d{1,2}):(\d{2})$/);
+    if (!selectedShownId || isNaN(deadline.getTime()) || !time) {
       return;
     }
-    mutation.mutate({ shownId: selectedShownId, deadline });
+    const hours = Number(time[1]);
+    const minutes = Number(time[2]);
+    if (hours > 23 || minutes > 59) return;
+
+    mutation.mutate({ shownId: selectedShownId, deadline, hours, minutes });
   }
 
   const {
@@ -60,11 +67,13 @@ export default function ProfilePage() {
     }: {
       shownId: string;
       deadline: Date;
+      hours: number;
+      minutes: number;
     }) => {
       if (!profileId) throw new Error("Ingen profil sparad");
       return SetDeadline(profileId, shownId, deadline);
     },
-    onSuccess: async (_data, { shownId, deadline }) => {
+    onSuccess: async (_data, { shownId, deadline, hours, minutes }) => {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       queryClient.invalidateQueries({ queryKey: ["appoints"] });
       setSelectedShownId("");
@@ -72,7 +81,7 @@ export default function ProfilePage() {
 
       const remindAt = new Date(deadline);
       remindAt.setDate(remindAt.getDate() - 1);
-      remindAt.setHours(9, 0, 0, 0);
+      remindAt.setHours(hours, minutes, 0, 0);
 
       await Notifications.cancelScheduledNotificationAsync(shownId);
       if (remindAt > new Date()) {
@@ -100,11 +109,13 @@ export default function ProfilePage() {
       setIsLoading(false);
     });
   }, []);
+
   const { data } = useQuery({
     queryKey: ["appoints", profileId],
     queryFn: () => getAppoints(profileId!),
     enabled: !!profileId,
   });
+
   if (error) {
     return (
       <View style={styles.centered}>
@@ -118,7 +129,7 @@ export default function ProfilePage() {
       <Stack.Screen options={{ title: "Profil" }} />
       {isLoading ? (
         <ActivityIndicator />
-      ) : profileId ? (
+      ) : profileId && (isPending || profile) ? (
         isPending ? (
           <ActivityIndicator />
         ) : isEditing ? (
@@ -155,10 +166,17 @@ export default function ProfilePage() {
                   onChangeText={setDeadlineText}
                   placeholder="ÅÅÅÅ-MM-DD"
                 />
+                <Text style={styles.label}>Påminnelse dagen innan kl.</Text>
+                <TextInput
+                  style={styles.input}
+                  value={reminderTime}
+                  onChangeText={setReminderTime}
+                  placeholder="TT:MM"
+                />
                 <Pressable
                   style={styles.button}
                   onPress={handleSetDeadline}
-                  disabled={mutation.isPaused}
+                  disabled={mutation.isPending}
                 >
                   <Text style={styles.buttonText}>
                     {mutation.isPending ? "Sparar..." : "Spara deadline"}
